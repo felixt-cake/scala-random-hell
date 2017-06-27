@@ -34,6 +34,7 @@ object RandomStrings {
       q"val ${Pat.Var.Term(n)} = ${expandTerm(v)}"
     case q"var ${Pat.Var.Term(n)} = ${Some(v)}"  =>
       q"var ${Pat.Var.Term(n)} = ${expandTerm(v)}"
+    case fn: Defn.Def => fn.copy(body = RandomStrings.expandTerm(fn.body))
     case other => other
   }
 

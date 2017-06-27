@@ -44,6 +44,35 @@ class RandomStringsIntegrationSpec extends FlatSpec with MustMatchers {
     result.length mustEqual 3
   }
 
+
+  it must "randomize function declarations" in {
+    @RandomStrings
+    def foo() = {
+      def s(n: Int) = "foo"
+      s(0)
+    }
+
+    val result = foo()
+    println(result)
+    result mustNot equal("foo")
+    result.length mustEqual 3
+  }
+
+
+
+  it must "randomize function declarations without args" in {
+    @RandomStrings
+    def foo() = {
+      def s = "foo"
+      s
+    }
+
+    val result = foo()
+    println(result)
+    result mustNot equal("foo")
+    result.length mustEqual 3
+  }
+
   it must "randomize literal values in function blocks" in {
     @RandomStrings
     def foo(z: Int) = {
