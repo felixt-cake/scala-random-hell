@@ -32,6 +32,8 @@ object RandomStrings {
     case t: Term => expandTerm(t)
     case q"val ${Pat.Var.Term(n)} = $v" =>
       q"val ${Pat.Var.Term(n)} = ${expandTerm(v)}"
+    case q"var ${Pat.Var.Term(n)} = ${Some(v)}"  =>
+      q"var ${Pat.Var.Term(n)} = ${expandTerm(v)}"
     case other => other
   }
 
