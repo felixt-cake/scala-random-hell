@@ -1,7 +1,6 @@
 package com.terkhorn.randomhell
 
 import scala.annotation.StaticAnnotation
-import scala.meta.Pat.Var
 import scala.meta._
 import scala.util.Random
 
@@ -31,18 +30,14 @@ object RandomStrings {
 
   private def expandStat(stat: Stat): Stat = stat match {
     case t: Term => expandTerm(t)
-    case d @ Decl.Val(_,pats,_) =>  d.copy(pats=pats.map(expandPat))
-    /*case q"val $n = $v" =>
-      val name: Term.Name = n.name
-      q"val ${Pat.Var.Term(Term.Name(name.value))} = $v"*/
+    case q"val ${Pat.Var.Term(n)} = $v" =>
+      q"val ${Pat.Var.Term(n)} = ${expandTerm(v)}"
     case other => other
   }
 
-  private def expandPat(pat: Pat.Var.Term): Pat.Var.Term = pat
-
-  private  [randomhell] def expandTerm(expr: Term): Term = expr match {
+  private[randomhell] def expandTerm(expr: Term): Term = expr match {
     case Lit(s: String) => Lit.String(randomize(s))
-    case Term.Block(stats) => Term.Block(stats.map(c=>RandomStrings.expandStat(c)))
+    case Term.Block(stats) => Term.Block(stats.map(c => RandomStrings.expandStat(c)))
     case Term.Return(e) => Term.Return(RandomStrings.expandTerm(e))
     case other => other
   }
