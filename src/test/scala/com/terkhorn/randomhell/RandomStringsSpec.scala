@@ -6,11 +6,9 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import org.scalatest.FunSuite
 
-// If you are doing complicated macro expansions, it's recommeded to unit test
-// the trickiest bits instead of relying only on integration tests.
-class MainUnitTest extends FunSuite {
 
-  // TODO(olafur) this method should be exposed in testkit
+class RandomStringsSpec extends FunSuite {
+
   def assertStructurallyEqual(obtained: Tree, expected: Tree): Unit = {
     StructurallyEqual(obtained, expected) match {
       case Left(AnyDiff(x, y)) =>
@@ -22,15 +20,21 @@ class MainUnitTest extends FunSuite {
     }
   }
 
-  test("@Main creates a main method") {
-    val obtained = ???
+  def testRnd(s: String): String = Seq.fill(s.length)('a').mkString
+
+  test("@RandomStrings randomizes simple functions") {
+    val obtained =
+      RandomStrings.expandDef(q"""
+        def foo(n: Int) = {
+          val s = "hello"
+          Range(0,z).map(_ => s).mkString("\n")
+        }
+       """, testRnd)
     val expected =
       q"""
-        object AnswerToEverything {
-          def main(args: Array[String]): Unit = {
-            val x = 42
-            println(x)
-          }
+        def foo(n: Int) = {
+          val s = "aaaaa"
+          Range(0,z).map(_ => s).mkString("\n")
         }
        """
     assertStructurallyEqual(obtained, expected)
