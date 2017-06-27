@@ -4,6 +4,7 @@ import Dependencies._
 lazy val libDependencies = Seq(
   scalaMeta % Compile,
   scalaMetaContrib % Compile,
+  "org.scalameta" %% "testkit" % "1.6.0",
   // testing
   scalaTest % Test
 )
