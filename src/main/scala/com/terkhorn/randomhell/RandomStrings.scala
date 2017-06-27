@@ -7,11 +7,11 @@ import scala.util.Random
 /**
   * before:
   *
-  * def foo(z: Int) = { val s = "hello"; Range(0,z).map(_ => s).mkstring("\n") }
+  * def foo(z: Int) = { val s = "hello"; Range(0,z).map(_ => s).mkString("\n") }
   *
   * potentially after:
   *
-  * def foo(z: Int) = { val s = "gxzha"; Range(0,z).map(_ => s).mkstring("\n") }
+  * def foo(z: Int) = { val s = "gxzha"; Range(0,z).map(_ => s).mkString("\n") }
   */
 class RandomStrings extends StaticAnnotation {
   inline def apply(defn: Any): Any = meta {

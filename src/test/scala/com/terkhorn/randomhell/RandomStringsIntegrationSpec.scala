@@ -14,8 +14,8 @@ class RandomStringsIntegrationSpec extends FlatSpec with MustMatchers {
 
     val result = foo(5)
     println(result)
-    // TODO
-
+    result.length mustEqual 29 // 5 lines * 5 chars + 4 newlines
+    result.contains("hello") mustNot be( true)
   }
 
   it must "randomize value declarations" in {
@@ -56,40 +56,3 @@ class RandomStringsIntegrationSpec extends FlatSpec with MustMatchers {
     result.length mustEqual 5
   }
 }
-
-/*
-
-import scala.meta._
-import scala.meta.testkit._
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
-import org.scalatest.FunSuite
-class MainUnitTest extends FunSuite {
-
-  def assertStructurallyEqual(obtained: Tree, expected: Tree): Unit = {
-    StructurallyEqual(obtained, expected) match {
-      case Left(AnyDiff(x, y)) =>
-        fail(s"""Not Structurally equal!:
-                |obtained: $x
-                |expected: $y
-             """.stripMargin)
-      case _ =>
-    }
-  }
-
-  test("@Main creates a main method") {
-    val obtained = MainMacroImpl.expand(q"AnswerToEverything",
-      List(q"val x = 42", q"println(x)"))
-    val expected =
-      q"""
-        object AnswerToEverything {
-          def main(args: Array[String]): Unit = {
-            val x = 42
-            println(x)
-          }
-        }
-       """
-    assertStructurallyEqual(obtained, expected)
-  }
-}
-*/
