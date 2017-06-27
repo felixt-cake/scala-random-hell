@@ -1,10 +1,5 @@
 package com.terkhorn.randomhell
 
-import scala.meta._
-import scala.meta.testkit._
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
-import org.scalatest.FunSuite
 
 import org.scalatest.{FlatSpec, MustMatchers}
 
@@ -21,6 +16,19 @@ class RandomStringsIntegrationSpec extends FlatSpec with MustMatchers {
     println(result)
     // TODO
 
+  }
+
+  it must "randomize value declarations" in {
+    @RandomStrings
+    def foo() = {
+      val s = "foo"
+      s
+    }
+
+    val result = foo()
+    println(result)
+    result mustNot equal("foo")
+    result.length mustEqual 3
   }
 
   it must "randomize literal values in function blocks" in {
@@ -49,7 +57,13 @@ class RandomStringsIntegrationSpec extends FlatSpec with MustMatchers {
   }
 }
 
+/*
 
+import scala.meta._
+import scala.meta.testkit._
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
+import org.scalatest.FunSuite
 class MainUnitTest extends FunSuite {
 
   def assertStructurallyEqual(obtained: Tree, expected: Tree): Unit = {
@@ -78,3 +92,4 @@ class MainUnitTest extends FunSuite {
     assertStructurallyEqual(obtained, expected)
   }
 }
+*/
