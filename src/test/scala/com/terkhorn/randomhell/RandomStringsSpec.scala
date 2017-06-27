@@ -20,7 +20,13 @@ class RandomStringsSpec extends FunSuite {
     }
   }
 
-  def testRnd(s: String): String = Seq.fill(s.length)('a').mkString
+  // structural equality is hard to test without
+  // getting the same output every time :-D
+  class TestRandomize extends Randomize {
+    override def randomize(s: String): String = Seq.fill(s.length)('a').mkString
+  }
+
+  val testRnd = new TestRandomize
 
   test("@RandomStrings randomizes simple functions") {
     val obtained =
@@ -29,13 +35,39 @@ class RandomStringsSpec extends FunSuite {
           val s = "hello"
           Range(0,z).map(_ => s).mkString("\n")
         }
-       """, testRnd)
+       """)(testRnd)
     val expected =
       q"""
         def foo(n: Int) = {
           val s = "aaaaa"
           Range(0,z).map(_ => s).mkString("\n")
         }
+       """
+    assertStructurallyEqual(obtained, expected)
+  }
+
+  test("@RandomStrings randomizes all declarations and free-floating literal strings") {
+    val obtained =
+      RandomStrings.expandDef(q"""
+        def foo(n: Int) = {
+          val s = "hello"
+          var t = "hullo"
+          def u = "hallo"
+          def v(n: Int) = "hillo"
+          "hey"
+          "HI THERE"
+        }
+       """)(testRnd)
+    val expected =
+      q"""
+        def foo(n: Int) = {
+           val s = "aaaaa"
+           var t = "aaaaa"
+           def u = "aaaaa"
+           def v(n: Int) = "aaaaa"
+           "aaa"
+           "aaaaaaaa"
+         }
        """
     assertStructurallyEqual(obtained, expected)
   }

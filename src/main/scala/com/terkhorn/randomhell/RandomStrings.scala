@@ -23,28 +23,34 @@ class RandomStrings extends StaticAnnotation {
   }
 }
 
-object RandomStrings {
+object Randomize {
   private val rnd = new Random
+}
 
-  private def randomize(s: String) = rnd.alphanumeric.take(s.length).mkString
+trait Randomize {
+  def randomize(s: String): String = Randomize.rnd.alphanumeric.take(s.length).mkString
+}
 
-  private [randomhell] def expandDef(fn: Defn.Def, rnd: String => String = randomize) =
-    fn.copy(body = RandomStrings.expandTerm(fn.body, rnd))
+object RandomStrings {
 
-  private def expandStat(stat: Stat, rnd: String => String = randomize): Stat = stat match {
+
+  private[randomhell] def expandDef(fn: Defn.Def)(implicit rnd: Randomize = new Randomize {}) =
+    fn.copy(body = RandomStrings.expandTerm(fn.body))
+
+  private def expandStat(stat: Stat)(implicit rnd: Randomize = new Randomize {}): Stat = stat match {
     case t: Term => expandTerm(t)
     case q"val ${Pat.Var.Term(n)} = $v" =>
-      q"val ${Pat.Var.Term(n)} = ${expandTerm(v, rnd)}"
-    case q"var ${Pat.Var.Term(n)} = ${Some(v)}"  =>
-      q"var ${Pat.Var.Term(n)} = ${expandTerm(v, rnd)}"
-    case fn: Defn.Def => fn.copy(body = RandomStrings.expandTerm(fn.body, rnd))
+      q"val ${Pat.Var.Term(n)} = ${expandTerm(v)}"
+    case q"var ${Pat.Var.Term(n)} = ${Some(v)}" =>
+      q"var ${Pat.Var.Term(n)} = ${expandTerm(v)}"
+    case fn: Defn.Def => fn.copy(body = RandomStrings.expandTerm(fn.body))
     case other => other
   }
 
-  private[randomhell] def expandTerm(expr: Term, rnd: String => String = randomize): Term = expr match {
-    case Lit(s: String) => Lit.String(rnd(s))
-    case Term.Block(stats) => Term.Block(stats.map(c => RandomStrings.expandStat(c, rnd)))
-    case Term.Return(e) => Term.Return(RandomStrings.expandTerm(e, rnd))
+  private[randomhell] def expandTerm(expr: Term)(implicit rnd: Randomize = new Randomize {}): Term = expr match {
+    case Lit(s: String) => Lit.String(rnd.randomize(s))
+    case Term.Block(stats) => Term.Block(stats.map(c => RandomStrings.expandStat(c)))
+    case Term.Return(e) => Term.Return(RandomStrings.expandTerm(e))
     case other => other
   }
 
